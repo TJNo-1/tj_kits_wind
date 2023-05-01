@@ -41,7 +41,7 @@ LOGGER_CONF = {
     }
 }
 
-LOGGER_FORMAT = Literal["very-short", "short", "normal", "wordy"]
+LOGGER_FORMAT = Literal["very_short", "short", "normal", "wordy"]
 LOGGER_LEVEL = Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
