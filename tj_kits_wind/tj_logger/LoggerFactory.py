@@ -4,8 +4,18 @@ import os
 import sys
 from typing import AnyStr, Dict, Optional, Literal, Union
 
-LOGGER_FORMAT = Literal["very_short", "short", "normal", "wordy"]
-LOGGER_LEVEL = Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+FORMAT_VERY_SHORT = "very_short"
+FORMAT_SHORT = "short"
+FORMAT_NORMAL = "normal"
+FORMAT_WORDY = "wordy"
+LOGGER_FORMAT = Union[FORMAT_VERY_SHORT, FORMAT_SHORT, FORMAT_NORMAL, FORMAT_WORDY]
+
+LOG_DEBUG = "DEBUG"
+LOG_INFO = "INFO"
+LOG_WARNING = "WARNING"
+LOG_ERROR = "ERROR"
+LOG_CRITICAL = "CRITICAL"
+LOGGER_LEVEL = Union[LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_CRITICAL]
 
 
 def get_logger_conf_dict() -> Dict:

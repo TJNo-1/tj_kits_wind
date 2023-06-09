@@ -4,45 +4,59 @@ import os
 import sys
 from typing import AnyStr, Dict, Optional, Literal, Union
 
-LOGGER_CONF = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        "main": {
-            "datefmt": '%m-%d %H:%M:%S',
-            "format": "[%(asctime)s | %(levelname)s | pid:%(process)d | %(filename)s:%(lineno)d] %(message)s"
+FORMAT_VERY_SHORT = "very_short"
+FORMAT_SHORT = "short"
+FORMAT_NORMAL = "normal"
+FORMAT_WORDY = "wordy"
+LOGGER_FORMAT = Union[FORMAT_VERY_SHORT, FORMAT_SHORT, FORMAT_NORMAL, FORMAT_WORDY]
 
-        },
-    },
+LOG_DEBUG = "DEBUG"
+LOG_INFO = "INFO"
+LOG_WARNING = "WARNING"
+LOG_ERROR = "ERROR"
+LOG_CRITICAL = "CRITICAL"
+LOGGER_LEVEL = Union[LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_CRITICAL]
 
-    #
-    "handlers": {
-        'tj_c': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'stream': sys.stdout,
-            'formatter': 'main'
-        },
-    },
 
-    #
-    "loggers": {
-        # 配置文件 中 只要定义了 root logger 就一定会 先传递至 root
-        #  其他 logger 均相当其 子类, 无论配置是否扩散
-        # "root": {
-        #     'handlers': ["tj_c"],
-        #     'level': "DEBUG",
-        #     "propagate": 1,
-        # },
-        "tj_c": {
-            'handlers': ["tj_c"],
-            'level': "DEBUG",
+def get_logger_conf_dict() -> Dict:
+    LOGGER_CONF = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            "main": {
+                "datefmt": '%m-%d %H:%M:%S',
+                # "format": "[%(asctime)s | %(levelname)s | pid:%(process)d | %(filename)s:%(lineno)d] %(message)s"
+
+            },
         },
+
+        #
+        "handlers": {
+            'tj_c': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'stream': sys.stdout,
+                'formatter': 'main'
+            },
+        },
+
+        #
+        "loggers": {
+            # 配置文件 中 只要定义了 root logger 就一定会 先传递至 root
+            #  其他 logger 均相当其 子类, 无论配置是否扩散
+            # "root": {
+            #     'handlers': ["tj_c"],
+            #     'level': "DEBUG",
+            #     "propagate": 1,
+            # },
+            "tj_c": {
+                'handlers': ["tj_c"],
+                'level': "DEBUG",
+            },
+        }
     }
-}
 
-LOGGER_FORMAT = Literal["very_short", "short", "normal", "wordy"]
-LOGGER_LEVEL = Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+    return LOGGER_CONF
 
 
 def logger_console(logger_format: LOGGER_FORMAT = "short"):
@@ -77,6 +91,8 @@ def create_logger(name: AnyStr,
                   add_logger: Optional[Dict] = None,
                   logger_format: LOGGER_FORMAT = "normal",
                   level: LOGGER_LEVEL = "INFO"):
+    LOGGER_CONF = get_logger_conf_dict()
+
     # 1. add handler and logger
     if add_handler:
         LOGGER_CONF["handlers"][name] = add_handler
@@ -84,11 +100,13 @@ def create_logger(name: AnyStr,
         LOGGER_CONF["loggers"][name] = add_logger
 
     # 2. set format and level
-    # "[%(asctime)s | %(levelname)s | pid:%(process)d | %(filename)s:%(lineno)d] %(message)s"
     if logger_format == "very_short":
         LOGGER_CONF["formatters"]["main"]["format"] = "[%(levelname)s] %(message)s"
     if logger_format == "short":
         LOGGER_CONF["formatters"]["main"]["format"] = "[%(asctime)s | %(levelname)s] %(message)s"
+    if logger_format == "normal":
+        LOGGER_CONF["formatters"]["main"]["format"] = \
+            "[%(asctime)s | %(levelname)s | pid:%(process)d | %(filename)s:%(lineno)d] %(message)s"
     if logger_format == "wordy":
         LOGGER_CONF["formatters"]["main"]["format"] = \
             "[%(asctime)s | %(levelname)s | pid:%(process)d | tid:%(thread)d | %(module)s | %(funcName)s | %(filename)s:%(lineno)d] %(message)s"
@@ -103,7 +121,7 @@ def create_logger(name: AnyStr,
 
     # 确定 logger name
     logger_name = LOGGER_CONF["loggers"].keys()
-    if not name or name not in logger_name:
+    if not name:
         name = "tj_c"
 
     # 返回 logger
