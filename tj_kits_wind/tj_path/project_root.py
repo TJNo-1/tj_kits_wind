@@ -24,6 +24,7 @@ def get_project_root(project_name: str | None = None, defalut_path: str | None =
         for ele in frame_split:
             ele = ele.replace(" ", "")
             if ele.startswith("file'"):
+                # 获取 调用者文件所在绝对路径部分.
                 ele = ele[4:]
                 res = ele.replace("'", "")
                 break
