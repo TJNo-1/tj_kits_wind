@@ -1,3 +1,5 @@
+from .tj_time_tools import *
+
 # tjno-1:
 #     __                                         _
 #    /\ \__    __                              /' \
